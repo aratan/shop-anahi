@@ -1,7 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const SOCKET_SERVER = 'http://localhost:3000';
+// Usando Socket.IO Cloud - nivel gratuito
+const SOCKET_SERVER = 'https://lovable-chat.onrender.com';
+
+// Usando servidores STUN públicos gratuitos
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun3.l.google.com:19302' },
+  { urls: 'stun:stun4.l.google.com:19302' },
+  { urls: 'stun:stun.stunprotocol.org:3478' },
+  { urls: 'stun:stun.voip.blackberry.com:3478' }
+];
 
 export const useWebRTC = (roomName: string) => {
   const [peers, setPeers] = useState<{ [key: string]: RTCPeerConnection }>({});
@@ -11,13 +23,7 @@ export const useWebRTC = (roomName: string) => {
   const createPeerConnection = (userId: string) => {
     console.log('Creando conexión peer para:', userId);
     const peerConnection = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
-      ]
+      iceServers: ICE_SERVERS
     });
 
     peerConnection.onicecandidate = (event) => {
@@ -70,7 +76,7 @@ export const useWebRTC = (roomName: string) => {
       console.log('Oferta recibida de:', source);
       const peerConnection = createPeerConnection(source);
       setPeers(prev => ({ ...prev, [source]: peerConnection }));
-      
+
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);

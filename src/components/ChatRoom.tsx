@@ -17,7 +17,8 @@ interface ChatRoomProps {
   roomName: string;
 }
 
-const SOCKET_SERVER = 'http://localhost:3000';
+// Usando Socket.IO Cloud - nivel gratuito
+const SOCKET_SERVER = 'https://lovable-chat.onrender.com';
 
 const ChatRoom = ({ roomName }: ChatRoomProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
