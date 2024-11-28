@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { io } from 'socket.io-client';
 
 interface Message {
   id: string;
@@ -15,38 +16,38 @@ interface ChatRoomProps {
   roomName: string;
 }
 
+const SOCKET_SERVER = 'http://localhost:3000'; // Ajusta esto a tu servidor de Socket.IO
+
 const ChatRoom = ({ roomName }: ChatRoomProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [connectedUsers, setConnectedUsers] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<any>(null);
 
-  // Simulate receiving messages
   useEffect(() => {
-    const timer = setInterval(() => {
-      const randomMessages = [
-        "Hey, how's it going?",
-        "Did you see the latest update?",
-        "That's interesting!",
-        "I agree with you",
-        "Let's discuss this later"
-      ];
-      
-      if (Math.random() > 0.7) {
-        const newMsg: Message = {
-          id: Date.now().toString(),
-          text: randomMessages[Math.floor(Math.random() * randomMessages.length)],
-          sender: 'other',
-          timestamp: Date.now()
-        };
-        setMessages(prev => [...prev, newMsg]);
-      }
-    }, 5000);
+    socketRef.current = io(SOCKET_SERVER);
+    
+    // Unirse a la sala
+    socketRef.current.emit('joinRoom', roomName);
+    
+    // Escuchar mensajes nuevos
+    socketRef.current.on('message', (message: Message) => {
+      setMessages(prev => [...prev, message]);
+    });
+    
+    // Escuchar usuarios conectados
+    socketRef.current.on('userList', (users: string[]) => {
+      setConnectedUsers(users);
+    });
 
-    return () => clearInterval(timer);
-  }, []);
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [roomName]);
 
-  // Auto scroll to bottom on new messages
+  // Auto scroll al recibir nuevos mensajes
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -58,9 +59,15 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
       const message: Message = {
         id: Date.now().toString(),
         text: newMessage,
-        sender: 'me',
+        sender: socketRef.current.id,
         timestamp: Date.now()
       };
+      
+      socketRef.current.emit('sendMessage', {
+        room: roomName,
+        message
+      });
+      
       setMessages(prev => [...prev, message]);
       setNewMessage('');
     }
@@ -76,7 +83,10 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
   return (
     <Card className="glass-panel h-[600px] flex flex-col">
       <div className="p-4 border-b">
-        <h3 className="font-semibold">Chat</h3>
+        <h3 className="font-semibold">Chat - {roomName}</h3>
+        <div className="text-sm text-muted-foreground">
+          {connectedUsers.length} usuarios conectados
+        </div>
       </div>
       
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
@@ -85,7 +95,7 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
             <div
               key={message.id}
               className={`message-bubble ${
-                message.sender === 'me' ? 'message-bubble-sent' : 'message-bubble-received'
+                message.sender === socketRef.current?.id ? 'message-bubble-sent' : 'message-bubble-received'
               }`}
             >
               {message.text}
@@ -107,11 +117,11 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
+            placeholder="Escribe un mensaje..."
             className="flex-1"
           />
           <Button onClick={handleSend} disabled={!newMessage.trim()}>
-            Send
+            Enviar
           </Button>
         </div>
       </div>
