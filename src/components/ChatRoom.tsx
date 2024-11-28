@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { io } from 'socket.io-client';
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
   id: string;
@@ -16,7 +17,7 @@ interface ChatRoomProps {
   roomName: string;
 }
 
-const SOCKET_SERVER = 'http://localhost:3000'; // Ajusta esto a tu servidor de Socket.IO
+const SOCKET_SERVER = 'http://localhost:3000';
 
 const ChatRoom = ({ roomName }: ChatRoomProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -25,12 +26,13 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
   const [connectedUsers, setConnectedUsers] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     socketRef.current = io(SOCKET_SERVER);
     
     // Unirse a la sala
-    socketRef.current.emit('joinRoom', roomName);
+    socketRef.current.emit('joinRoom', { room: roomName, userId: socketRef.current.id });
     
     // Escuchar mensajes nuevos
     socketRef.current.on('message', (message: Message) => {
@@ -40,12 +42,33 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
     // Escuchar usuarios conectados
     socketRef.current.on('userList', (users: string[]) => {
       setConnectedUsers(users);
+      toast({
+        title: "Usuarios actualizados",
+        description: `${users.length} usuarios en la sala`,
+      });
+    });
+
+    // Escuchar cuando un usuario se une
+    socketRef.current.on('userJoined', (userId: string) => {
+      toast({
+        title: "Usuario conectado",
+        description: "Un nuevo usuario se ha unido a la sala",
+      });
+    });
+
+    // Escuchar cuando un usuario se desconecta
+    socketRef.current.on('userLeft', (userId: string) => {
+      toast({
+        title: "Usuario desconectado",
+        description: "Un usuario ha abandonado la sala",
+      });
     });
 
     return () => {
+      socketRef.current.emit('leaveRoom', { room: roomName, userId: socketRef.current.id });
       socketRef.current.disconnect();
     };
-  }, [roomName]);
+  }, [roomName, toast]);
 
   // Auto scroll al recibir nuevos mensajes
   useEffect(() => {
