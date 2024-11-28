@@ -29,18 +29,24 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    socketRef.current = io(SOCKET_SERVER);
+    // Inicializar socket
+    socketRef.current = io(SOCKET_SERVER, {
+      transports: ['websocket'],
+      upgrade: false
+    });
     
     // Unirse a la sala
-    socketRef.current.emit('joinRoom', { room: roomName, userId: socketRef.current.id });
+    socketRef.current.emit('joinRoom', { room: roomName });
     
     // Escuchar mensajes nuevos
     socketRef.current.on('message', (message: Message) => {
+      console.log('Mensaje recibido:', message);
       setMessages(prev => [...prev, message]);
     });
     
     // Escuchar usuarios conectados
     socketRef.current.on('userList', (users: string[]) => {
+      console.log('Lista de usuarios actualizada:', users);
       setConnectedUsers(users);
       toast({
         title: "Usuarios actualizados",
@@ -50,6 +56,7 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
 
     // Escuchar cuando un usuario se une
     socketRef.current.on('userJoined', (userId: string) => {
+      console.log('Usuario unido:', userId);
       toast({
         title: "Usuario conectado",
         description: "Un nuevo usuario se ha unido a la sala",
@@ -58,6 +65,7 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
 
     // Escuchar cuando un usuario se desconecta
     socketRef.current.on('userLeft', (userId: string) => {
+      console.log('Usuario desconectado:', userId);
       toast({
         title: "Usuario desconectado",
         description: "Un usuario ha abandonado la sala",
@@ -65,12 +73,13 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
     });
 
     return () => {
-      socketRef.current.emit('leaveRoom', { room: roomName, userId: socketRef.current.id });
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.emit('leaveRoom', { room: roomName });
+        socketRef.current.disconnect();
+      }
     };
   }, [roomName, toast]);
 
-  // Auto scroll al recibir nuevos mensajes
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -86,12 +95,12 @@ const ChatRoom = ({ roomName }: ChatRoomProps) => {
         timestamp: Date.now()
       };
       
+      console.log('Enviando mensaje:', message);
       socketRef.current.emit('sendMessage', {
         room: roomName,
         message
       });
       
-      setMessages(prev => [...prev, message]);
       setNewMessage('');
     }
   };
