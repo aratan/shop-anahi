@@ -3,27 +3,34 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ShoppingCart, Heart, Search, User, Menu } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/contexts/CartContext";
+import { Link, useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [timeLeft, setTimeLeft] = useState({ minutes: 29, seconds: 46 });
+  const { addItem, items } = useCart();
+  const navigate = useNavigate();
 
   const featuredProducts = [
     {
+      id: "1",
       name: "SET 9 AM POUR FEMME",
-      price: "€72.60",
+      price: 72.60,
       image: "/placeholder.svg"
     },
     {
+      id: "2",
       name: "SET CLUB DE NUIT ICONIC",
-      price: "€99.22",
-      originalPrice: "€108.90",
+      price: 99.22,
+      originalPrice: 108.90,
       image: "/placeholder.svg",
       onSale: true
     },
     {
+      id: "3",
       name: "BADEE HONOR Y GLORIA",
-      price: "€40.17",
-      originalPrice: "€67.64",
+      price: 40.17,
+      originalPrice: 67.64,
       image: "/placeholder.svg",
       onSale: true
     }
@@ -39,12 +46,12 @@ const Index = () => {
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
-              <h1 className="ml-4 text-2xl font-serif">LUXURY SCENTS</h1>
+              <Link to="/" className="ml-4 text-2xl font-serif">LUXURY SCENTS</Link>
             </div>
             <div className="hidden md:flex space-x-8">
-              <Button variant="ghost">Catálogo</Button>
-              <Button variant="ghost">Novedades</Button>
-              <Button variant="ghost">Contact</Button>
+              <Link to="/catalog"><Button variant="ghost">Catálogo</Button></Link>
+              <Link to="/new-arrivals"><Button variant="ghost">Novedades</Button></Link>
+              <Link to="/contact"><Button variant="ghost">Contact</Button></Link>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon">
@@ -53,9 +60,18 @@ const Index = () => {
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="relative">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative"
+                onClick={() => navigate('/cart')}
+              >
                 <ShoppingCart className="h-5 w-5" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">1</Badge>
+                {items.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">
+                    {items.reduce((acc, item) => acc + item.quantity, 0)}
+                  </Badge>
+                )}
               </Button>
             </div>
           </div>
@@ -100,7 +116,7 @@ const Index = () => {
         <h3 className="text-2xl font-serif mb-8">Featured Products</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featuredProducts.map((product) => (
-            <Card key={product.name} className="p-4 hover:shadow-lg transition-shadow">
+            <Card key={product.id} className="p-4 hover:shadow-lg transition-shadow">
               <div className="aspect-square relative mb-4">
                 <img src={product.image} alt={product.name} className="object-cover w-full h-full rounded-md" />
                 {product.onSale && (
@@ -109,12 +125,22 @@ const Index = () => {
               </div>
               <h4 className="font-medium">{product.name}</h4>
               <div className="flex items-center space-x-2 mt-2">
-                <span className="text-lg font-semibold">{product.price}</span>
+                <span className="text-lg font-semibold">€{product.price}</span>
                 {product.originalPrice && (
-                  <span className="text-sm text-gray-500 line-through">{product.originalPrice}</span>
+                  <span className="text-sm text-gray-500 line-through">€{product.originalPrice}</span>
                 )}
               </div>
-              <Button className="w-full mt-4">Agregar al carrito</Button>
+              <Button 
+                className="w-full mt-4"
+                onClick={() => addItem({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.image
+                })}
+              >
+                Agregar al carrito
+              </Button>
             </Card>
           ))}
         </div>
