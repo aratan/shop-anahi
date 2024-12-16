@@ -5,11 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Mail, Phone, MessageSquare, Menu, Search, User, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Contact = () => {
   const { items } = useCart();
   const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) {
+      alert("Por favor, completa todos los campos requeridos.");
+      return;
+    }
+    console.log("Formulario enviado: ", form);
+    alert("¡Mensaje enviado con éxito!");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -21,12 +38,20 @@ const Contact = () => {
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
-              <Link to="/" className="ml-4 text-2xl font-serif">LUXURY SCENTS</Link>
+              <Link to="/" className="ml-4 text-2xl font-serif">
+                LUXURY SCENTS
+              </Link>
             </div>
             <div className="hidden md:flex space-x-8">
-              <Link to="/catalog"><Button variant="ghost">Catálogo</Button></Link>
-              <Link to="/new-arrivals"><Button variant="ghost">Novedades</Button></Link>
-              <Link to="/contact"><Button variant="ghost">Contact</Button></Link>
+              <Link to="/catalog">
+                <Button variant="ghost">Catálogo</Button>
+              </Link>
+              <Link to="/new-arrivals">
+                <Button variant="ghost">Novedades</Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="ghost">Contact</Button>
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon">
@@ -35,11 +60,11 @@ const Contact = () => {
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="relative"
-                onClick={() => navigate('/cart')}
+                onClick={() => navigate("/cart")}
               >
                 <ShoppingCart className="h-5 w-5" />
                 {items.length > 0 && (
@@ -70,15 +95,37 @@ const Contact = () => {
                   <span>info@perfumes.com</span>
                 </div>
               </div>
-              
-              <form className="space-y-4">
+
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Nombre" />
-                  <Input placeholder="Email" type="email" />
+                  <Input
+                    placeholder="Nombre"
+                    name="name"
+                    value={form.name}
+                    onChange={handleInputChange}
+                  />
+                  <Input
+                    placeholder="Email"
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleInputChange}
+                  />
                 </div>
-                <Input placeholder="Asunto" />
-                <Textarea placeholder="Mensaje" className="min-h-[150px]" />
-                <Button className="w-full">
+                <Input
+                  placeholder="Asunto"
+                  name="subject"
+                  value={form.subject}
+                  onChange={handleInputChange}
+                />
+                <Textarea
+                  placeholder="Mensaje"
+                  name="message"
+                  value={form.message}
+                  onChange={handleInputChange}
+                  className="min-h-[150px]"
+                />
+                <Button className="w-full" type="submit">
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Enviar Mensaje
                 </Button>
