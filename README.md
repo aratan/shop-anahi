@@ -1,12 +1,8 @@
-# Comunicacion
-
-
+# Shop Anahi
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
-
-
 
 **Use your preferred IDE**
 
@@ -18,10 +14,10 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/aratan/shop-anahi
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd shop-anahi
 
 # Step 3: Install the necessary dependencies.
 npm i
@@ -59,3 +55,7 @@ This project is built with .
     Asier ( Programador Junior )
     
     Víctor( Programador Senior )
+
+![web](https://github.com/user-attachments/assets/7f8f3c61-e17b-48b7-8390-cee99ecb1f4f)
+
+    
