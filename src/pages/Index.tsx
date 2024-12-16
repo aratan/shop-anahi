@@ -67,7 +67,7 @@ const Index = () => {
       id: "1",
       name: "SET 9 AM POUR FEMME",
       price: 72.60,
-      image: "/placeholder.svg"
+      image: "https://divinafraganciacr.com/cdn/shop/files/9AM-MUJER-100ML-EDP-AFNAN.jpg"
     },
     {
       id: "2",
