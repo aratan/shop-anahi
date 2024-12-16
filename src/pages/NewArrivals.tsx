@@ -45,7 +45,7 @@ const newProducts = [
 ];
 
 const formatPrice = (price: number): string => {
-  return price.toString();  // Convert number to string explicitly
+  return price.toFixed(2);  // Aseguramos que siempre devuelve un string
 };
 
 const NewArrivals = () => {
