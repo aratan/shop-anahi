@@ -74,7 +74,7 @@ const Index = () => {
       name: "SET CLUB DE NUIT ICONIC",
       price: 99.22,
       originalPrice: 108.90,
-      image: "/placeholder.svg",
+      image: "https://fraganzi.com/cdn/shop/files/regalopremiundiadelpadre.jpg",
       onSale: true
     },
     {
@@ -82,7 +82,7 @@ const Index = () => {
       name: "BADEE HONOR Y GLORIA",
       price: 40.17,
       originalPrice: 67.64,
-      image: "/placeholder.svg",
+      image: "https://www.perfumesmalaga.es/2469-large_default/bade-e-al-oud-honor-glory-lattafa-perfumes-unisex.jpg",
       onSale: true
     }
   ];
