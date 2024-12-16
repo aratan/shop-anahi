@@ -8,6 +8,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { searchProducts } from "@/utils/search";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  isNew?: boolean;  // Add this optional property
+  originalPrice?: number;
+}
+
 const newProducts = [
   {
     id: "1",
@@ -34,6 +43,10 @@ const newProducts = [
     isNew: true
   }
 ];
+
+const formatPrice = (price: number): string => {
+  return price.toString();  // Convert number to string explicitly
+};
 
 const NewArrivals = () => {
   const [searchTerm, setSearchTerm] = useState("");

@@ -1,15 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ShoppingCart, Heart, Search, User, Menu } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
 import { Link, useNavigate } from 'react-router-dom';
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 const Index = () => {
   const [timeLeft, setTimeLeft] = useState({ minutes: 29, seconds: 46 });
   const { addItem, items } = useCart();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [showUserValidation, setShowUserValidation] = useState(false);
+  const [username, setUsername] = useState("");
+
+  // Countdown timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 };
+        } else {
+          clearInterval(timer);
+          return { minutes: 0, seconds: 0 };
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // User validation query
+  const { data: users, isLoading: isValidating } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await fetch('https://jsonplaceholder.typicode.com/users');
+      return response.json();
+    },
+    enabled: showUserValidation && username.length > 0
+  });
+
+  const validateUser = () => {
+    if (users && users.some(user => user.username.toLowerCase() === username.toLowerCase())) {
+      toast({
+        title: "Success!",
+        description: "User validated successfully",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "User not found",
+        variant: "destructive",
+      });
+    }
+  };
 
   const featuredProducts = [
     {
@@ -39,7 +90,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b">
+      <nav className="border-b fixed top-0 left-0 right-0 bg-white z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -54,10 +105,18 @@ const Index = () => {
               <Link to="/contact"><Button variant="ghost">Contact</Button></Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setShowSearch(!showSearch)}
+              >
                 <Search className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setShowUserValidation(!showUserValidation)}
+              >
                 <User className="h-5 w-5" />
               </Button>
               <Button 
@@ -75,11 +134,36 @@ const Index = () => {
               </Button>
             </div>
           </div>
+          {showSearch && (
+            <div className="py-2">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+          )}
+          {showUserValidation && (
+            <div className="py-2 flex gap-2">
+              <Input
+                type="text"
+                placeholder="Enter username..."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="flex-1"
+              />
+              <Button onClick={validateUser} disabled={isValidating}>
+                {isValidating ? "Validating..." : "Validate"}
+              </Button>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative bg-[#9b87f5]/10 py-24">
+      {/* Hero Section with fixed top margin to account for fixed nav */}
+      <div className="relative bg-[#9b87f5]/10 py-24 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-4xl font-serif tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
@@ -93,14 +177,16 @@ const Index = () => {
             <div className="mt-8">
               <p className="text-lg font-semibold text-primary">Hurry up!</p>
               <p className="text-sm text-gray-500">Sale ends in:</p>
-              <div className="flex justify-center space-x-4 mt-2">
-                <div className="text-2xl font-bold">{timeLeft.minutes}</div>
+              <div className="flex justify-center gap-8 mt-2">
+                <div className="text-center">
+                  <div className="text-2xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                  <div className="text-sm text-gray-500">Mins</div>
+                </div>
                 <div className="text-2xl font-bold">:</div>
-                <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-              </div>
-              <div className="flex justify-center space-x-4">
-                <div className="text-sm text-gray-500">Mins</div>
-                <div className="text-sm text-gray-500">Secs</div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                  <div className="text-sm text-gray-500">Secs</div>
+                </div>
               </div>
             </div>
 
