@@ -97,6 +97,7 @@ const Index = () => {
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
+              <img src="https://lasalhajasdetoledoymas.com/cdn/shop/files/Screenshot_20231214_090808_ad92fa08-082b-4d36-9beb-876727ffa229.jpg?v=1704297589&width=150"></img>
               <Link to="/" className="ml-4 text-2xl font-serif">LUXURY SCENTS</Link>
             </div>
             <div className="hidden md:flex space-x-8">
