@@ -99,7 +99,7 @@ const Index = () => {
               </Button>
               <img 
               src="https://lasalhajasdetoledoymas.com/cdn/shop/files/Screenshot_20231214_090808_ad92fa08-082b-4d36-9beb-876727ffa229.jpg?v=1704297589&width=150" 
-              style="width: 100px; height: auto;" 
+              style="width: 60px; height: 30px;" 
               alt="Logo"
               />
 
