@@ -13,11 +13,11 @@ interface Product {
   name: string;
   price: number;
   image: string;
-  isNew?: boolean;  // Add this optional property
+  isNew?: boolean;
   originalPrice?: number;
 }
 
-const newProducts = [
+const newProducts: Product[] = [
   {
     id: "1",
     name: "BADEE HONOR Y GLORIA- Unisex",
@@ -45,7 +45,7 @@ const newProducts = [
 ];
 
 const formatPrice = (price: number): string => {
-  return price.toFixed(2);  // Aseguramos que siempre devuelve un string
+  return price.toFixed(2);
 };
 
 const NewArrivals = () => {
@@ -65,6 +65,11 @@ const NewArrivals = () => {
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
+              <img 
+                src="https://lasalhajasdetoledoymas.com/cdn/shop/files/Screenshot_20231214_090808_ad92fa08-082b-4d36-9beb-876727ffa229.jpg" 
+                className="w-15 h-8 ml-4" 
+                alt="Logo" 
+              />
               <Link to="/" className="ml-4 text-2xl font-serif">LUXURY SCENTS</Link>
             </div>
             <div className="hidden md:flex space-x-8">
@@ -127,8 +132,10 @@ const NewArrivals = () => {
                 <CardContent>
                   <div className="flex justify-between items-center">
                     <div>
-                      <span className="text-lg font-bold text-red-600">€{product.price}</span>
-                      <span className="text-sm line-through ml-2">€{product.originalPrice}</span>
+                      <span className="text-lg font-bold text-red-600">€{formatPrice(product.price)}</span>
+                      {product.originalPrice && (
+                        <span className="text-sm line-through ml-2">€{formatPrice(product.originalPrice)}</span>
+                      )}
                     </div>
                     <Button 
                       className="flex items-center gap-2"

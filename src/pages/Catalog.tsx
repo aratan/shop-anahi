@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,8 +49,7 @@ const Catalog = () => {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      quantity: 1
+      image: product.image
     });
   };
 
@@ -65,6 +63,11 @@ const Catalog = () => {
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
+              <img 
+                src="https://lasalhajasdetoledoymas.com/cdn/shop/files/Screenshot_20231214_090808_ad92fa08-082b-4d36-9beb-876727ffa229.jpg" 
+                className="w-15 h-8 ml-4" 
+                alt="Logo" 
+              />
               <Link to="/" className="ml-4 text-2xl font-serif">LUXURY SCENTS</Link>
             </div>
             <div className="hidden md:flex space-x-8">

@@ -1,13 +1,14 @@
 export interface Product {
-  id: string | number;
+  id: string;
   name: string;
   price: number;
   originalPrice?: number;
   image: string;
   onSale?: boolean;
+  isNew?: boolean;
 }
 
-export const searchProducts = (products: Product[], searchTerm: string) => {
+export const searchProducts = (products: Product[], searchTerm: string): Product[] => {
   const normalizedSearch = searchTerm.toLowerCase().trim();
   const searchPrice = parseFloat(normalizedSearch);
 
