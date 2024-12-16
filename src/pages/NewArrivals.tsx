@@ -23,7 +23,7 @@ const newProducts = [
     name: "BADEE HONOR Y GLORIA- Unisex",
     price: 40.17,
     originalPrice: 67.64,
-    image: "/placeholder.svg",
+    image: "https://www.perfumesmalaga.es/2469-large_default/bade-e-al-oud-honor-glory-lattafa-perfumes-unisex.jpg",
     isNew: true
   },
   {
@@ -31,7 +31,7 @@ const newProducts = [
     name: "SET 9 AM POUR FEMME",
     price: 72.60,
     originalPrice: 89.99,
-    image: "/placeholder.svg",
+    image: "https://divinafraganciacr.com/cdn/shop/files/9AM-MUJER-100ML-EDP-AFNAN.jpg",
     isNew: true
   },
   {
@@ -39,7 +39,7 @@ const newProducts = [
     name: "SET CLUB DE NUIT ICONIC",
     price: 99.22,
     originalPrice: 108.90,
-    image: "/placeholder.svg",
+    image: "https://fraganzi.com/cdn/shop/files/regalopremiundiadelpadre.jpg",
     isNew: true
   }
 ];
