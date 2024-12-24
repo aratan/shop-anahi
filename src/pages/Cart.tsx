@@ -1,11 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, total } = useCart();
   const navigate = useNavigate();
+
+  const handleStripeCheckout = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        body: {
+          items,
+          successUrl: `${window.location.origin}/payment/success`,
+          cancelUrl: `${window.location.origin}/cart`,
+        },
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al procesar el pago. Por favor, inténtalo de nuevo.');
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -63,7 +88,14 @@ const Cart = () => {
           <span className="text-xl font-bold">€{total.toFixed(2)}</span>
         </div>
         
-        <div className="flex space-x-4">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+          <Button
+            className="flex-1 bg-black hover:bg-gray-800"
+            onClick={handleStripeCheckout}
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Pagar con tarjeta
+          </Button>
           <Button
             className="flex-1"
             onClick={() => navigate('/payment/paypal')}
